@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="homepage.css">
+</head>
+<body>
+    <div id="main">
+        <div id="header">
+            <div id="cafeLogo"></div>
+            <div id="cafeName"> <h1>CAFE NAME</h1> </div>
+        </div>
+        <div id="mainImage"></div>
+        <nav id="categories" aria-label="Menu categories">
+            <button class="category active" type="button" data-category="bestseller">Bestseller</button>
+            <button class="category" type="button" data-category="drinks">Drinks</button>
+            <button class="category" type="button" data-category="mojito">Mojito</button>
+            <button class="category" type="button" data-category="chinese">Chinese</button>
+            <button class="category" type="button" data-category="italian">Italian</button>
+            <button class="category" type="button" data-category="main-course">Main Course</button>
+            <button class="category" type="button" data-category="south-indian">South Indian</button>
+            <button class="category" type="button" data-category="desserts">Desserts</button>
+            <button class="category" type="button" data-category="snacks">Snacks</button>
+        </nav>
+        <section class="menu-section" id="section-bestseller" data-category="bestseller">
+            <h2 class="section-title">Bestseller</h2>
+            <div class="dish-list"></div>
+        </section>
+        <section class="menu-section" id="section-drinks" data-category="drinks">
+            <h2 class="section-title">Drinks</h2>
+            <div class="dish-list"></div>
+        </section>
+        <section class="menu-section" id="section-mojito" data-category="mojito">
+            <h2 class="section-title">Mojito</h2>
+            <div class="dish-list"></div>
+        </section>
+        <section class="menu-section" id="section-chinese" data-category="chinese">
+            <h2 class="section-title">Chinese</h2>
+            <div class="dish-list"></div>
+        </section>
+        <section class="menu-section" id="section-italian" data-category="italian">
+            <h2 class="section-title">Italian</h2>
+            <div class="dish-list"></div>
+        </section>
+        <section class="menu-section" id="section-main-course" data-category="main-course">
+            <h2 class="section-title">Main Course</h2>
+            <div class="dish-list"></div>
+        </section>
+        <section class="menu-section" id="section-south-indian" data-category="south-indian">
+            <h2 class="section-title">South Indian</h2>
+            <div class="dish-list"></div>
+        </section>
+        <section class="menu-section" id="section-desserts" data-category="desserts">
+            <h2 class="section-title">Desserts</h2>
+            <div class="dish-list"></div>
+        </section>
+        <section class="menu-section" id="section-snacks" data-category="snacks">
+            <h2 class="section-title">Snacks</h2>
+            <div class="dish-list"></div>
+        </section>
+    </div>
+    <script src="homepage.js"></script>
+</body>
+</html>
