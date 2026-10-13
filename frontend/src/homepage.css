@@ -83,7 +83,7 @@ body {
 .category {
     flex: 0 0 auto;
     padding: 9px 14px;
-    border: 1px solid #aabaaeaf;
+    border: 1px solid #84634a;
     border-radius: 20px;
     background-color: #e3d6bf76;
     color: #756c57;
@@ -123,7 +123,7 @@ body {
     min-height: 88px;
     margin: 0 3%;
     padding: 10px 0;
-    border: solid 2px #aabaaeaf;
+    border: solid 2px #84634a;
     border-radius: 20px;
     display: flex;
     align-items: center;

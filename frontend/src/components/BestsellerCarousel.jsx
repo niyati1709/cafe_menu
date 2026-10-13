@@ -3,11 +3,11 @@ import './BestsellerCarousel.css';
 
 export default function BestsellerCarousel({ dishes = [], title = 'Bestseller' }) {
   const trackRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
+  const isInteractingRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollStartRef = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollStart, setScrollStart] = useState(0);
+  const resumeTimeoutRef = useRef(null);
 
   // Duplicate dishes to achieve seamless infinite right-to-left scrolling loop
   const displayDishes = dishes.length > 0 ? [...dishes, ...dishes] : [];
@@ -19,7 +19,7 @@ export default function BestsellerCarousel({ dishes = [], title = 'Bestseller' }
 
     const step = () => {
       const track = trackRef.current;
-      if (track && isPlaying && !isHovered && !isDragging) {
+      if (track && !isInteractingRef.current) {
         track.scrollLeft += speed;
 
         // When scrolled past half the content (first copy of dishes), loop seamlessly
@@ -37,59 +37,78 @@ export default function BestsellerCarousel({ dishes = [], title = 'Bestseller' }
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
       }
+      if (resumeTimeoutRef.current) {
+        clearTimeout(resumeTimeoutRef.current);
+      }
     };
-  }, [isPlaying, isHovered, isDragging, dishes.length]);
+  }, [dishes.length]);
 
-  // Handle manual navigation buttons
-  const handleScrollPrev = () => {
+  // Seamless infinite loop handling during drag/momentum scroll
+  const handleScroll = () => {
     const track = trackRef.current;
     if (!track) return;
-    const cardStep = 240;
     const halfWidth = track.scrollWidth / 2;
-
-    if (track.scrollLeft - cardStep < 0 && halfWidth > 0) {
-      track.scrollLeft += halfWidth;
+    if (halfWidth > 0) {
+      if (track.scrollLeft >= halfWidth) {
+        track.scrollLeft -= halfWidth;
+        scrollStartRef.current -= halfWidth;
+      } else if (track.scrollLeft <= 0) {
+        track.scrollLeft += halfWidth;
+        scrollStartRef.current += halfWidth;
+      }
     }
-    track.scrollBy({ left: -cardStep, behavior: 'smooth' });
   };
 
-  const handleScrollNext = () => {
+  // Touch drag handlers (mobile)
+  const handleTouchStart = (e) => {
+    isInteractingRef.current = true;
+    if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
+    startXRef.current = e.touches[0].clientX;
+    scrollStartRef.current = trackRef.current ? trackRef.current.scrollLeft : 0;
+  };
+
+  const handleTouchMove = (e) => {
     const track = trackRef.current;
     if (!track) return;
-    const cardStep = 240;
-    const halfWidth = track.scrollWidth / 2;
-
-    if (halfWidth > 0 && track.scrollLeft + cardStep >= track.scrollWidth - track.clientWidth) {
-      track.scrollLeft -= halfWidth;
-    }
-    track.scrollBy({ left: cardStep, behavior: 'smooth' });
+    const currentX = e.touches[0].clientX;
+    const deltaX = currentX - startXRef.current;
+    track.scrollLeft = scrollStartRef.current - deltaX;
   };
 
-  const togglePlayPause = () => {
-    setIsPlaying((prev) => !prev);
+  const handleTouchEnd = () => {
+    if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
+    resumeTimeoutRef.current = setTimeout(() => {
+      isInteractingRef.current = false;
+    }, 600);
   };
 
-  // Mouse drag to scroll handlers
+  // Mouse drag handlers (desktop)
   const handleMouseDown = (e) => {
-    const track = trackRef.current;
-    if (!track) return;
+    isInteractingRef.current = true;
     setIsDragging(true);
-    setStartX(e.pageX - track.offsetLeft);
-    setScrollStart(track.scrollLeft);
+    if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
+    startXRef.current = e.clientX;
+    scrollStartRef.current = trackRef.current ? trackRef.current.scrollLeft : 0;
   };
 
   const handleMouseMove = (e) => {
     if (!isDragging) return;
-    e.preventDefault();
     const track = trackRef.current;
     if (!track) return;
-    const x = e.pageX - track.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    track.scrollLeft = scrollStart - walk;
+    e.preventDefault();
+    const currentX = e.clientX;
+    const deltaX = currentX - startXRef.current;
+    track.scrollLeft = scrollStartRef.current - deltaX;
   };
 
   const handleMouseUp = () => {
-    setIsDragging(false);
+    if (isDragging) {
+      setIsDragging(false);
+      if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
+      resumeTimeoutRef.current = setTimeout(() => {
+        isInteractingRef.current = false;
+      }, 600);
+    }
   };
 
   return (
@@ -99,50 +118,20 @@ export default function BestsellerCarousel({ dishes = [], title = 'Bestseller' }
           <h2 className="section-title">{title}</h2>
           <span className="bestseller-badge-header">Chef's Specials</span>
         </div>
-        <div className="bestseller-controls">
-          <button
-            type="button"
-            className="carousel-control-btn"
-            onClick={handleScrollPrev}
-            aria-label="Scroll to previous bestseller"
-            title="Previous"
-          >
-            &#10094;
-          </button>
-          <button
-            type="button"
-            className={`carousel-control-btn carousel-play-btn ${!isPlaying ? 'paused' : ''}`}
-            onClick={togglePlayPause}
-            aria-label={isPlaying ? 'Pause auto-scroll' : 'Resume auto-scroll'}
-            title={isPlaying ? 'Pause' : 'Play'}
-          >
-            {isPlaying ? '❚❚' : '▶'}
-          </button>
-          <button
-            type="button"
-            className="carousel-control-btn"
-            onClick={handleScrollNext}
-            aria-label="Scroll to next bestseller"
-            title="Next"
-          >
-            &#10095;
-          </button>
-        </div>
       </div>
 
       <div
         className={`bestseller-carousel-track ${isDragging ? 'is-dragging' : ''}`}
         ref={trackRef}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => {
-          setIsHovered(false);
-          setIsDragging(false);
-        }}
-        onTouchStart={() => setIsHovered(true)}
-        onTouchEnd={() => setIsHovered(false)}
+        onScroll={handleScroll}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
       >
         {displayDishes.map((dish, index) => (
           <article
@@ -159,8 +148,8 @@ export default function BestsellerCarousel({ dishes = [], title = 'Bestseller' }
                   className="bestseller-card-image"
                   style={dish.imagePosition ? { objectPosition: dish.imagePosition } : undefined}
                   loading="lazy"
+                  draggable={false}
                   onError={(e) => {
-                    // Fall back to stylized graphic if image path cannot be loaded
                     e.currentTarget.style.display = 'none';
                     const fallbackEl = e.currentTarget.parentElement.querySelector(
                       '.bestseller-card-placeholder'
