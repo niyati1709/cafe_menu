@@ -7,6 +7,8 @@
 html,body {
     min-height: 100%;
     width: 100%;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -27,6 +29,14 @@ body {
     background-color: #e3d6bf76;
     border: solid 2px #e3d6bf;
     border-radius: 20px;
+    padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
+}
+
+@media (max-width: 450px) {
+    #main {
+        border: none;
+        border-radius: 0;
+    }
 }
 
 #header {
@@ -61,6 +71,7 @@ body {
     padding: 8px 14px;
     overflow-x: auto;
     overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -78,6 +89,8 @@ body {
     color: #756c57;
     font: inherit;
     cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
 }
 
 .category.active {
@@ -162,4 +175,5 @@ body {
     margin: 0 12px;
     color: #3d1f12;
     font-weight: 600;
+    white-space: nowrap;
 }
