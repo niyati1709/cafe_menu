@@ -86,7 +86,7 @@ body {
     border: 1px solid #84634a;
     border-radius: 20px;
     background-color: #e3d6bf76;
-    color: #756c57;
+    color: #84634a;
     font: inherit;
     cursor: pointer;
     white-space: nowrap;
@@ -165,7 +165,7 @@ body {
 }
 
 .dish_descp {
-    color: #756c57;
+    color: #84634a;
     font-size: 0.85rem;
     font-weight: 400;
 }
